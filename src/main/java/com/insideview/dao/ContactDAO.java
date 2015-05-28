@@ -45,7 +45,9 @@ public class ContactDAO extends RecordUtils {
 	}
 
 	private void fillData(DataRecord dr, NavigableMap<byte[], byte[]> familyMap) {
-
+		if (familyMap == null || familyMap.isEmpty()) {
+			return;
+		}
 		Integer jobLevel = getIntegerFromMap(familyMap, COL1);
 		if (jobLevel != null) {
 			dr.setJobLevel(jobLevel.shortValue());

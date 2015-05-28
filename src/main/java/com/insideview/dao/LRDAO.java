@@ -10,6 +10,7 @@ import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.spark.mllib.classification.LogisticRegressionModel;
 import org.apache.spark.mllib.classification.SVMModel;
 import org.apache.spark.mllib.linalg.Vectors;
 
@@ -28,7 +29,7 @@ public class LRDAO {
 		this.connection = DBConfiguration.getConnection();
 	}
 
-	public void storeModel(SVMModel model) throws IOException {
+	public void storeModel(LogisticRegressionModel model) throws IOException {
 		double[] weights = model.weights().toArray();
 		double intercept = model.intercept();
 		StringBuilder weightsString = new StringBuilder();

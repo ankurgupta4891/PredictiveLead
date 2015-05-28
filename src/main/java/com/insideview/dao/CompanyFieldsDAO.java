@@ -20,6 +20,8 @@ public class CompanyFieldsDAO extends RecordUtils {
 	private static final byte[] FAMILY = Bytes.toBytes("d");
 	private static final byte[] COL1 = Bytes.toBytes("popularity");
 	private static final byte[] COL2 = Bytes.toBytes("fortuneRanking");
+	private static final byte[] COL3 = Bytes.toBytes("revenues");
+	private static final byte[] COL4 = Bytes.toBytes("employees");
 	private HConnection connection;
 	private static final Log LOG = LogFactory.getLog(CompanyFieldsDAO.class);
 
@@ -45,7 +47,9 @@ public class CompanyFieldsDAO extends RecordUtils {
 	}
 
 	private void fillData(DataRecord dr, NavigableMap<byte[], byte[]> familyMap) {
-
+		if (familyMap == null || familyMap.isEmpty()) {
+			return;
+		}
 		Integer popularity = getIntegerFromMap(familyMap, COL1);
 		if (popularity != null) {
 			dr.setPopularity(popularity);
@@ -53,6 +57,14 @@ public class CompanyFieldsDAO extends RecordUtils {
 		Integer fortuneListed = getIntegerFromMap(familyMap, COL2);
 		if (fortuneListed != null) {
 			dr.setFortuneListed(fortuneListed == -1 ? false : true);
+		}
+		Double revenue = getDoubleFromMap(familyMap, COL3);
+		if (revenue != null) {
+			dr.setRevenue(revenue);
+		}
+		Integer empCount = getIntegerFromMap(familyMap, COL4);
+		if (empCount != null) {
+			dr.setEmpCount(empCount);
 		}
 	}
 

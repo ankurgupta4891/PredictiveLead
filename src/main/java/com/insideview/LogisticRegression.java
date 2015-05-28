@@ -6,8 +6,9 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.Function;
+import org.apache.spark.mllib.classification.LogisticRegressionModel;
+import org.apache.spark.mllib.classification.LogisticRegressionWithSGD;
 import org.apache.spark.mllib.classification.SVMModel;
-import org.apache.spark.mllib.classification.SVMWithSGD;
 import org.apache.spark.mllib.evaluation.BinaryClassificationMetrics;
 import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.mllib.linalg.Vectors;
@@ -15,10 +16,15 @@ import org.apache.spark.mllib.regression.LabeledPoint;
 
 import scala.Tuple2;
 
+import com.google.gson.Gson;
+import com.insideview.dao.LRDAO;
+
 @SuppressWarnings("serial")
 public class LogisticRegression {
 	private static final Log LOG = LogFactory.getLog(LogisticRegression.class);
 	private static SVMModel model = null;
+	private static LRDAO lrdao = new LRDAO();
+	private static Gson gson = new Gson();
 
 	public static void main(String[] args) throws Exception {
 		train(args);
@@ -30,12 +36,13 @@ public class LogisticRegression {
 		JavaRDD<String> data = sc.textFile(path);
 		JavaRDD<LabeledPoint> parsedData = data.map(new Function<String, LabeledPoint>() {
 			public LabeledPoint call(String line) {
-				String[] parts = line.split(",");
-				String[] features = parts[1].split(" ");
-				double[] v = new double[features.length];
-				for (int i = 0; i < features.length - 1; i++)
-					v[i] = Double.parseDouble(features[i]);
-				return new LabeledPoint(Double.parseDouble(parts[0]), Vectors.dense(v));
+				DataRecord r = gson.fromJson(line, DataRecord.class);
+				int res = 0;
+				if (r.isLabel()) {
+					res = 1;
+				}
+				System.out.println("input is: " + getVector(r) + " y " + res);
+				return new LabeledPoint(Double.valueOf(res), getVector(r));
 			}
 		});
 
@@ -46,15 +53,14 @@ public class LogisticRegression {
 
 		// Run training algorithm to build the model.
 		int numIterations = 100;
-		final SVMModel model = SVMWithSGD.train(training.rdd(), numIterations);
-
+		final LogisticRegressionModel model = LogisticRegressionWithSGD.train(training.rdd(), numIterations);
 		// Clear the default threshold.
 		model.clearThreshold();
-
 		// Compute raw scores on the test set.
 		JavaRDD<Tuple2<Object, Object>> scoreAndLabels = test.map(new Function<LabeledPoint, Tuple2<Object, Object>>() {
 			public Tuple2<Object, Object> call(LabeledPoint p) {
 				Double score = model.predict(p.features());
+				System.out.println("predicted " + score + " for " + p);
 				return new Tuple2<Object, Object>(score, p.label());
 			}
 		});
@@ -62,9 +68,8 @@ public class LogisticRegression {
 		// Get evaluation metrics.
 		BinaryClassificationMetrics metrics = new BinaryClassificationMetrics(JavaRDD.toRDD(scoreAndLabels));
 		double auROC = metrics.areaUnderROC();
-		Vector weights=model.weights();
-		double intercept=model.intercept();
-		
+		lrdao.storeModel(model);
+		System.out.println("model is " + model);
 		System.out.println("Area under ROC = " + auROC);
 
 	}

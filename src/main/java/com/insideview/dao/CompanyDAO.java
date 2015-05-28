@@ -45,7 +45,9 @@ public class CompanyDAO extends RecordUtils {
 	}
 
 	private void fillData(DataRecord dr, NavigableMap<byte[], byte[]> familyMap) {
-
+		if (familyMap == null || familyMap.isEmpty()) {
+			return;
+		}
 		Double revenue = getDoubleFromMap(familyMap, COL1);
 		if (revenue != null) {
 			dr.setRevenue(revenue);

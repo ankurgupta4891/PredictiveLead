@@ -13,6 +13,15 @@ public class DataRecord {
 	int compId;
 	int execId;
 	int empId;
+	double probability;
+
+	public double getProbability() {
+		return probability;
+	}
+
+	public void setProbability(double probability) {
+		this.probability = probability;
+	}
 
 	public short getJobLevel() {
 		return jobLevel;
@@ -102,4 +111,16 @@ public class DataRecord {
 		this.empId = empId;
 	}
 
+	public boolean isValid() {
+		if ((jobFunction == 0 && jobLevel == 0) || (popularity == 0 && empCount == 0 && revenue == 0)) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "DataRecord [jobLevel=" + jobLevel + ", jobFunction=" + jobFunction + ", empCount=" + empCount + ", popularity=" + popularity + ", revenue=" + revenue + ", fortuneListed=" + fortuneListed
+		    + ", email=" + email + ", label=" + label + ", compId=" + compId + ", execId=" + execId + ", empId=" + empId + ", probability=" + probability + "]";
+	}
 }
