@@ -7,10 +7,12 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.HConnection;
 import org.apache.hadoop.hbase.client.HTableInterface;
+import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.log4j.Logger;
 
+import com.insideview.BlockingKey;
 import com.insideview.DataRecord;
 import com.insideview.RecordUtils;
 import com.insideview.database.configuration.DBConfiguration;
@@ -27,6 +29,23 @@ public class EmailBlockingDao extends RecordUtils {
 
 	public EmailBlockingDao() {
 		this.connection = DBConfiguration.getConnection();
+	}
+
+	public void saveBlockingKey(BlockingKey key) throws IOException {
+		long start = System.currentTimeMillis();
+		HTableInterface table = connection.getTable(TABLE);
+
+		try {
+			Put put = new Put(Bytes.toBytes(key.getEmail()));
+			put.add(FAMILY, COL1, Bytes.toBytes(String.valueOf(key.getExecId())));
+			put.add(FAMILY, COL2, Bytes.toBytes(String.valueOf(key.getEmpId())));
+			put.add(FAMILY, COL3, Bytes.toBytes(String.valueOf(key.getCompId())));
+			table.put(put);
+		} finally {
+			if (table != null)
+				table.close();
+		}
+		log.info("took " + (System.currentTimeMillis() - start) + " mills to save blocking key");
 	}
 
 	public void loadDataRecordForKey(DataRecord record) throws IOException {

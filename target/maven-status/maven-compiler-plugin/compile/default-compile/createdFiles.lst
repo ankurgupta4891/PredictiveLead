@@ -1,0 +1,12 @@
+com\insideview\dao\CompanyFieldsDAO.class
+com\insideview\database\configuration\DBConfiguration.class
+com\insideview\dao\ContactDAO.class
+com\insideview\App.class
+com\insideview\DataRecordService.class
+com\insideview\BlockingKey.class
+com\insideview\DataRecord.class
+com\insideview\database\configuration\DBConfiguration$1.class
+com\insideview\dao\EmailBlockingDao.class
+com\insideview\RecordUtils.class
+com\insideview\database\configuration\DatabaseUtils.class
+com\insideview\dao\CompanyDAO.class
