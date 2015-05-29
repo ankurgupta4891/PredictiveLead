@@ -59,11 +59,11 @@ public class CompanyFieldsDAO extends RecordUtils {
 			dr.setFortuneListed(fortuneListed == -1 ? false : true);
 		}
 		Double revenue = getDoubleFromMap(familyMap, COL3);
-		if (revenue != null) {
+		if (revenue != null && dr.getRevenue() == 0.0) {
 			dr.setRevenue(revenue);
 		}
 		Integer empCount = getIntegerFromMap(familyMap, COL4);
-		if (empCount != null) {
+		if (empCount != null && dr.getEmpCount() == 0) {
 			dr.setEmpCount(empCount);
 		}
 	}
