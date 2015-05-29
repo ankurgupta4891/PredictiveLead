@@ -11,7 +11,6 @@ import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.spark.mllib.classification.LogisticRegressionModel;
-import org.apache.spark.mllib.classification.SVMModel;
 import org.apache.spark.mllib.linalg.Vectors;
 
 import com.insideview.database.configuration.DBConfiguration;
@@ -52,10 +51,10 @@ public class LRDAO {
 		}
 	}
 
-	public SVMModel getModel() throws IOException {
+	public LogisticRegressionModel getModel() throws IOException {
 		HTableInterface table = connection.getTable(TABLE);
 		Get get = new Get(MODEL_ROW);
-		SVMModel model = null;
+		LogisticRegressionModel model = null;
 		try {
 			Result r = table.get(get);
 			double intercept = Double.parseDouble(Bytes.toString(r.getValue(FAMILY, INTERCEPT_COL)));
@@ -65,7 +64,7 @@ public class LRDAO {
 			for (int i = 0; i < tokens.length; i++) {
 				weights[i] = Double.parseDouble(tokens[i]);
 			}
-			model = new SVMModel(Vectors.dense(weights), intercept);
+			model = new LogisticRegressionModel(Vectors.dense(weights), intercept);
 		} finally {
 			if (table != null) {
 				table.close();
