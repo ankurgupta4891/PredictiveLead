@@ -15,10 +15,14 @@ public class DataRecordService {
 	private static CompanyFieldsDAO companyFieldsDAO = new CompanyFieldsDAO();
 	private static ContactDAO contactDAO = new ContactDAO();
 	private static final Log LOG = LogFactory.getLog(DataRecordService.class);
+	private static DataCsvReader dataReader = DataCsvReader.getInstance();
 
 	public static DataRecord getDataRecordForEmail(String email) {
-		DataRecord record = new DataRecord();
-		record.setEmail(email);
+		DataRecord record = dataReader.getRecord(email);
+		if (record == null) {
+			record = new DataRecord();
+			record.setEmail(email);
+		}
 		try {
 			record = build(record);
 		} catch (IOException e) {
@@ -41,5 +45,15 @@ public class DataRecordService {
 		}
 		LOG.info("Matched record 3: " + record);
 		return record;
+	}
+
+	public static void main(String[] args) throws IOException {
+		DataRecord record = new DataRecord();
+		record.setEmpCount(1001000);
+		record.setJobLevel(Integer.valueOf(4).shortValue());
+		record.setRevenue(500);
+		record.setJobFunction(6);
+		record.setPopularity(2500);
+		System.out.println(LogisticRegression.predict(record));
 	}
 }

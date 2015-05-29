@@ -40,11 +40,13 @@ public class LogisticRegression {
 			public LabeledPoint call(String line) {
 				DataRecord r = gson.fromJson(line, DataRecord.class);
 				int res = 0;
-				if (r.isLabel()) {
+				Vector v = getVector(r);
+				double[] x = v.toArray();
+				if (x[0] >= 5 || x[4] >= 100 || x[3] >= 1000) {
 					res = 1;
 				}
 				System.out.println("input is: " + getVector(r) + " y " + res);
-				return new LabeledPoint(Double.valueOf(res), getVector(r));
+				return new LabeledPoint(Double.valueOf(res), v);
 			}
 		});
 
